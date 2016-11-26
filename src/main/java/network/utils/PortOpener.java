@@ -13,7 +13,12 @@ import java.util.Scanner;
 public class PortOpener {
     private  GatewayDiscover discover;
     private GatewayDevice d;
-
+    
+    
+    /**
+     * Constructeur de la classe PortOpener
+     * @param port
+     */
     public PortOpener(int port){
 
         try {
@@ -29,7 +34,11 @@ public class PortOpener {
             e.printStackTrace();
         }
     }
-
+    
+    /**
+     * Au cas où le programme s'arrete, le port est refermé.
+     * @param port
+     */
     public void handleExit(final int port) {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -44,7 +53,12 @@ public class PortOpener {
             }
         });
     }
-
+    /**
+     * Ouvre le port passé en parametre avec le protocol uPnP
+     * @param port
+     * @throws IOException
+     * @throws SAXException
+     */
     public void openPort(int port) throws IOException, SAXException {
         if (null != d) {
             System.out.println("routeur trouvé : "+new Object[]{d.getModelName(), d.getModelDescription()});
@@ -58,11 +72,6 @@ public class PortOpener {
         String externalIPAddress = d.getExternalIPAddress();
         System.out.println("adresse externe : "+ externalIPAddress);
 
-        /*PortMappingEntry portMapping = new PortMappingEntry();
-
-        if (!d.getSpecificPortMappingEntry(port,"TCP",portMapping)) {
-            System.out.println("port : "+port+" deja ouvert");
-        }*/
         if (!d.addPortMapping(port, port, localAddress.getHostAddress(), "TCP", "jxta")) {
             System.out.println("erreur port " + port + " non ouvert");
         } else {
@@ -70,6 +79,12 @@ public class PortOpener {
         }
     }
 
+    /**
+     * Ferme le port passé en parametre.
+     * @param port
+     * @throws IOException
+     * @throws SAXException
+     */
     public void closePort(int port) throws IOException, SAXException {
         if(d!=null) {
             d.deletePortMapping(port, "TCP");
