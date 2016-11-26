@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -87,7 +89,80 @@ public class JxtaPeer implements Peer{
 	@Override
 	public void bootstrap(String... ips) {
 		if ( ips.length > 0){ // Si le fichier des adresses IPs est définie
-			String ip = ips[0]; // Récupération du noms du fichier des adresses IPs
+			NetworkManager networkManager = node.getNetworkManager();
+			
+		    String result = "";
+            String url = "http://92.153.145.62:3000/request/";
+		    URL oracle=null;
+			try {
+				oracle = new URL(url);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            BufferedReader in = null;
+			try {
+				in = new BufferedReader(new InputStreamReader(oracle.openStream()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            String inputLine;
+            try {
+				while ((inputLine = in.readLine()) != null)
+				    result += inputLine;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+            try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		    String[] res = result.split(";");
+		    
+		    URL whatismyip = null;
+			try {
+				whatismyip = new URL("http://checkip.amazonaws.com");
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            BufferedReader in2 = null;
+			try {
+				in2 = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+            String Myip = null;
+			try {
+				Myip = in2.readLine();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		    
+		    for ( int i = 0 ; i<res.length;++i){
+		        if ( !res[i].equals(Myip) ) {
+		        	String ip_en_cours = "tcp://"+res[i]+":9800";
+		        	URI theSeed = URI.create(ip_en_cours);
+		        	try {
+					    System.out.println("server added : " + theSeed);
+					    networkManager.getConfigurator().addSeedRendezvous(theSeed);
+				    } catch (IOException e) {
+				        System.out.println("erreur");
+					    e.printStackTrace();
+				    }
+				 }
+		    }
+		}
+		
+			/*String ip = ips[0]; // Récupération du noms du fichier des adresses IPs
 			NetworkManager networkManager = node.getNetworkManager(); // Récupération du networkManager en cours
 			
 			FileInputStream fis = null;
@@ -117,7 +192,7 @@ public class JxtaPeer implements Peer{
 				// TODO Auto-generated catch block
 				System.out.println("Fichier d'adresse serveur inexistant.");	
 			}
-		}
+		}*/
 		
 	}
 
