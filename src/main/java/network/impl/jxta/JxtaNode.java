@@ -86,7 +86,7 @@ public class JxtaNode implements Node{
 	private NetworkManager initializeNetworkManager(File configFile, String peerName, boolean persistant) throws IOException {
 		NetworkManager manager = null;
 		NetworkConfigurator configurator = null;
-		manager = new NetworkManager(NetworkManager.ConfigMode.EDGE, peerName, configFile.toURI()); /* Setting network */
+		manager = new NetworkManager(NetworkManager.ConfigMode.RENDEZVOUS, peerName, configFile.toURI()); /* Setting network */
 		configurator = manager.getConfigurator(); /* Getting configurator for future tweaks */
         configurator.setTcpEnabled(true);
         configurator.setHttpEnabled(true);
